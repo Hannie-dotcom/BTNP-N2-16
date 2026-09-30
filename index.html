@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài tập Ngữ pháp N2 - Bài 16 (Shinkanzen)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+        
+        body {
+            background: linear-gradient(rgba(255, 245, 247, 0.55), rgba(240, 220, 225, 0.65)),
+                        url('https://images.unsplash.com/photo-1522383225653-ed111181a951?q=80&w=1920&auto=format&fit=crop') center/cover no-repeat fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .sakura-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .petal {
+            position: absolute;
+            background: #ffb7c5;
+            border-radius: 15px 0 15px 0;
+            opacity: 0.75;
+            filter: drop-shadow(0 2px 4px rgba(216, 90, 127, 0.2));
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translate(0, -10px) rotate(0deg); opacity: 0.8; }
+            100% { transform: translate(120px, 105vh) rotate(360deg); opacity: 0; }
+        }
+
+        .app-card {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            width: 100%;
+            max-width: 600px;
+            border-radius: 24px;
+            padding: 32px 28px;
+            border: 1.5px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 20px 40px rgba(180, 100, 120, 0.15);
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 6px;
+        }
+
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: #b06d7e; 
+            margin-bottom: 20px; 
+            padding-bottom: 10px;
+            border-bottom: 1.5px solid #f2d5db;
+        }
+
+        .question-card {
+            background: #fff5f7;
+            border-left: 4px solid #d85a7f;
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #d85a7f;
+            margin-bottom: 8px;
+        }
+
+        .question-text { 
+            font-size: 18px; 
+            font-weight: 600; 
+            color: #3a2e30; 
+            line-height: 1.6;
+        }
+
+        .options-grid { display: flex; flex-direction: column; gap: 12px; }
+        
+        .opt-btn {
+            display: flex;
+            align-items: center;
+            background: #ffffff;
+            border: 1.5px solid #f2d5db;
+            color: #4a383b;
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .opt-btn::before {
+            content: '';
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid #b06d7e;
+            border-radius: 50%;
+            margin-right: 14px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover { 
+            background: #fff0f3; 
+            border-color: #d85a7f; 
+            transform: translateY(-1px); 
+        }
+
+        .opt-btn.correct { 
+            background: #e8f5e9 !important; 
+            border-color: #66bb6a !important; 
+            color: #2e7d32 !important; 
+        }
+        .opt-btn.correct::before {
+            background: #4caf50;
+            border-color: #4caf50;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .opt-btn.wrong { 
+            background: #ffebee !important; 
+            border-color: #ef5350 !important; 
+            color: #c62828 !important; 
+        }
+        .opt-btn.wrong::before {
+            background: #ef5350;
+            border-color: #ef5350;
+            box-shadow: inset 0 0 0 3px #ffffff;
+        }
+
+        .feedback { 
+            display: none;
+            margin-top: 20px; 
+            font-size: 15px; 
+            text-align: left;
+        }
+
+        .result-status {
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .explain-card {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1.5px solid #f2d5db;
+            border-radius: 16px;
+            padding: 16px;
+            line-height: 1.6;
+            color: #3a2e30;
+        }
+
+        .explain-item {
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .explain-item:last-child { margin-bottom: 0; }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            margin-right: 6px;
+            color: white;
+        }
+        .tag-grammar { background: #e07a9e; }
+        .tag-trans { background: #5c6bc0; }
+        .tag-meaning { background: #26a69a; }
+
+        .next-btn {
+            display: block;
+            width: 100%;
+            margin-top: 16px;
+            background: linear-gradient(135deg, #e07a9e 0%, #d85a7f 100%);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .next-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+    </style>
+</head>
+<body>
+
+    <div class="sakura-container" id="sakura-box"></div>
+
+    <div class="app-card">
+        <div class="lesson-title">Bài 16 - N2 (Shinkanzen Master)</div>
+
+        <div class="header">
+            <span id="q-count">Câu 1 / 22</span>
+            <span id="score-count">Điểm: 0</span>
+        </div>
+
+        <div class="question-card">
+            <div class="question-title" id="q-type">Câu 1: Chọn đáp án đúng</div>
+            <div class="question-text" id="question-content"></div>
+        </div>
+
+        <div class="options-grid" id="quiz-box">
+            <button class="opt-btn" onclick="checkAnswer(0)"></button>
+            <button class="opt-btn" onclick="checkAnswer(1)"></button>
+            <button class="opt-btn" onclick="checkAnswer(2)"></button>
+        </div>
+
+        <div class="feedback" id="feedback">
+            <div class="result-status" id="result-status"></div>
+            <div class="explain-card">
+                <div class="explain-item"><span class="tag tag-grammar">Cấu trúc</span><span id="ex-grammar"></span></div>
+                <div class="explain-item"><span class="tag tag-meaning">Ý nghĩa</span><span id="ex-meaning"></span></div>
+                <div class="explain-item"><span class="tag tag-trans">Dịch câu</span><span id="ex-trans"></span></div>
+            </div>
+            <button class="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
+        </div>
+    </div>
+
+    <script>
+        function createPetal() {
+            const box = document.getElementById('sakura-box');
+            const p = document.createElement('div');
+            p.classList.add('petal');
+            p.style.width = Math.random() * 8 + 8 + 'px';
+            p.style.height = Math.random() * 10 + 10 + 'px';
+            p.style.left = Math.random() * 100 + 'vw';
+            p.style.animationDuration = Math.random() * 4 + 6 + 's';
+            box.appendChild(p);
+            setTimeout(() => p.remove(), 10000);
+        }
+        setInterval(createPetal, 400);
+
+        // Toàn bộ 22 câu bài tập Shinkanzen N2 - Bài 16 (Trang 76 - 77)
+        const quizData = [
+            // Mục 1: ～によって
+            {
+                q: '結果については ( ) によりお知らせします。',
+                options: ['手紙', '文書', '電話'],
+                answer: 1,
+                grammar: 'N + により／によって',
+                meaning: 'Bằng phương tiện/phương thức N (văn phong trang trọng).',
+                trans: 'Về kết quả, chúng tôi sẽ thông báo bằng văn bản.'
+            },
+            {
+                q: 'この薬は、20回以上の実験 ( ) 効果が証明された。',
+                options: ['によって', 'による', 'によっての'],
+                answer: 0,
+                grammar: 'N + によって + 動詞',
+                meaning: 'Do / Nhờ có N mà dẫn đến kết quả (bổ nghĩa cho động từ/mệnh đề phía sau).',
+                trans: 'Loại thuốc này đã được chứng minh hiệu quả nhờ vào hơn 20 lần thử nghiệm.'
+            },
+            {
+                q: 'この地震 ( ) 津波の心配はありません。',
+                options: ['によって', 'による', 'によっての'],
+                answer: 1,
+                grammar: 'N1 + による + N2',
+                meaning: 'N2 nguyên nhân do N1 (bổ nghĩa trực tiếp cho danh từ N2 đứng sau).',
+                trans: 'Không có lo ngại về sóng thần do trận động đất này gây ra.'
+            },
+            {
+                q: '事故の原因は運転手の不注意 ( ) 信号無視だった。',
+                options: ['から', 'による', 'によって'],
+                answer: 1,
+                grammar: 'N1 + による + N2',
+                meaning: 'Nguyên nhân tai nạn là việc vượt đèn đỏ do sự bất cẩn của tài xế.',
+                trans: 'Nguyên nhân của vụ tai nạn là việc vượt đèn đỏ do sự bất cẩn của người lái xe.'
+            },
+            {
+                q: '中川先生と出会ったことによって、わたしは ( )。',
+                options: ['うれしかった', 'たいへん良かった', '大きく変わった'],
+                answer: 2,
+                grammar: 'V-普通形 + ことによって + Biến đổi/Kết quả',
+                meaning: 'Nhờ có nguyên nhân N mà bản thân có sự thay đổi lớn.',
+                trans: 'Nhờ gặp gỡ thầy Nakagawa mà tôi đã thay đổi rất nhiều.'
+            },
+            // Mục 2: ～ものだから・～もので・～もの
+            {
+                q: 'A「どうしてこれ、食べないの？」 B「だって、( )。ぜんぜん食べられないよ。」',
+                options: ['大嫌いなもの', '大嫌いなんだもの', '大嫌いであるもの'],
+                answer: 1,
+                grammar: 'N / A-ナ + なんだもの (もん)',
+                meaning: 'Tại vì... (Nêu lý do cá nhân, biện bạch trong giao tiếp thân mật).',
+                trans: 'A: "Sao bạn không ăn cái này?" - B: "Tại vì tôi cực kỳ ghét nó mà. Hoàn toàn không ăn được đâu."'
+            },
+            {
+                q: '朝ご飯を食べなかったものだから、( )。',
+                options: ['おなかがすいてきた', '早く昼ご飯にしよう', 'ここで食べてもいいですか'],
+                answer: 0,
+                grammar: 'V-た形 + ものだから + Kết quả thực tế',
+                meaning: 'Vì lý do... nên dẫn tới kết quả (không đi với câu đề nghị/mơ ước/ý chí).',
+                trans: 'Vì buổi sáng tôi không ăn gì nên giờ thấy đói bụng rồi.'
+            },
+            {
+                q: 'ちょっと寒いんです。( ) もので。',
+                options: ['冬になった', '気温が8度な', 'シャツ1枚しか着ていない'],
+                answer: 2,
+                grammar: 'V-ている + もので',
+                meaning: 'Vì... (Giải thích lý do, vế sau được lược bỏ).',
+                trans: 'Tôi thấy hơi lạnh. Là vì tôi chỉ mặc mỗi một chiếc áo sơ mi thôi.'
+            },
+            // Mục 3: ～おかげだ／～せいだ
+            {
+                q: '田中さんの ( )、楽しい旅行ができました。ありがとうございました。',
+                options: ['おかげで', 'おかげさまで', 'おかげか'],
+                answer: 0,
+                grammar: 'N の + おかげで',
+                meaning: 'Nhờ có N mà đạt được kết quả tốt.',
+                trans: 'Nhờ có anh Tanaka mà chúng tôi đã có một chuyến du lịch vui vẻ. Xin cảm ơn anh.'
+            },
+            {
+                q: '体力がついてきたおかげで、これからは ( )。',
+                options: ['頑張ろう', '頑張れる', '頑張ることにした'],
+                answer: 1,
+                grammar: '～おかげで + Khả năng/Trạng thái tốt',
+                meaning: 'Vế sau diễn tả trạng thái tốt hoặc khả năng có được nhờ nguyên nhân trước đó.',
+                trans: 'Nhờ thể lực đã tốt lên, từ bây giờ tôi có thể cố gắng làm việc được rồi.'
+            },
+            {
+                q: '来客が多かったせいで、とても ( )。',
+                options: ['良かった', '楽しかった', '疲れた'],
+                answer: 2,
+                grammar: '～せいで + Kết quả xấu',
+                meaning: 'Tại/Do... mà dẫn tới kết quả không tốt (mệt mỏi).',
+                trans: 'Tại vì có nhiều khách đến thăm nên tôi rất mệt.'
+            },
+            {
+                q: 'この夏、気温が上がらなかった ( )、ぶどうが甘くない。',
+                options: ['せいで', 'おかげで', 'おかげか'],
+                answer: 0,
+                grammar: 'V-過去形 + せいで',
+                meaning: 'Do nhiệt độ không tăng lên khiến nho không ngọt (kết quả xấu).',
+                trans: 'Do mùa hè năm nay nhiệt độ không tăng lên nên nho không được ngọt.'
+            },
+            // Mục 4: ～あまり・あまりの～に
+            {
+                q: '結論を ( ) あまり、相手を怒らせてしまった。',
+                options: ['急いだ', '急いだの', '急いで'],
+                answer: 0,
+                grammar: 'V-た形 + あまり',
+                meaning: 'Vì quá... nên dẫn tới kết quả không mong muốn.',
+                trans: 'Vì quá vội vã đưa ra kết luận nên tôi đã làm cho đối phương tức giận.'
+            },
+            {
+                q: 'わたしが書いた小説が入選した。その晩はうれしさのあまり ( )。',
+                options: ['よく眠った', 'よく眠れなかった', '少し眠った'],
+                answer: 1,
+                grammar: 'N (Danh từ hóa cảm xúc) + のあまり + Trạng thái bất thường',
+                meaning: 'Vì quá vui mừng nên không thể ngủ được.',
+                trans: 'Cuốn tiểu thuyết tôi viết đã trúng tuyển. Đêm đó vì quá vui mừng nên tôi không sao ngủ được.'
+            },
+            {
+                q: 'お祭りの後はごみがいっぱいだった。あまりの汚さに ( )。',
+                options: ['ぼーっとしてしまった', '気分が悪くなった', 'そうじ'],
+                answer: 1,
+                grammar: 'あまりの N に + Trạng thái bất thường',
+                meaning: 'Vì quá bẩn nên thấy buồn nôn/khó chịu.',
+                trans: 'Sau lễ hội có rất nhiều rác. Vì quá bẩn thỉu nên tôi cảm thấy khó chịu trong người.'
+            },
+            {
+                q: '沖縄の海は本当にきれいだった。あまりの美しさに ( )。',
+                options: ['言葉が出なかった', '良くないと思う', 'とってもうれしかった'],
+                answer: 0,
+                grammar: 'あまりの N に + Cảm xúc vượt mức bình thường',
+                meaning: 'Vì quá đẹp nên không thốt nên lời.',
+                trans: 'Biển ở Okinawa thực sự rất đẹp. Vì cảnh sắc quá đỗi xinh đẹp nên tôi đã không thốt nên lời.'
+            },
+            // Mục 5: ～につき
+            {
+                q: 'ただ今 ( ) につき、入室はご遠慮ください。',
+                options: ['忙しい', '仕事', '録音中'],
+                answer: 2,
+                grammar: 'N + につき',
+                meaning: 'Vì lý do N (dùng trong thông báo, bảng hiệu chính thức).',
+                trans: 'Hiện đang trong quá trình ghi âm, xin vui lòng không vào phòng.'
+            },
+            {
+                q: '雨天につき、( )。',
+                options: ['今日はお出かけしたくない', '本日の野球の試合は中止とする', '今日は外出はやめよう'],
+                answer: 1,
+                grammar: 'N + につき + Thông báo chính thức',
+                meaning: 'Vế sau là câu thông báo trang trọng, không đi với mong muốn cá nhân.',
+                trans: 'Vì trời mưa, trận thi đấu bóng chày hôm nay xin được hủy bỏ.'
+            },
+            {
+                q: 'このプリンターは故障につき、( )。',
+                options: ['わたしが直しましょうか', '直してくださいよ', '使用できません'],
+                answer: 2,
+                grammar: 'N + につき + Trạng thái/Thông báo',
+                meaning: 'Vì máy in bị hỏng nên không thể sử dụng.',
+                trans: 'Máy in này vì hỏng hóc nên không thể sử dụng.'
+            },
+            // Mục 1~5: Bài tập tổng hợp
+            {
+                q: 'あの議員は不注意な発言 ( ) 人気根がなくなってしまった。',
+                options: ['によって', 'のあまり', 'につき'],
+                answer: 0,
+                grammar: 'N + によって',
+                meaning: 'Do phát ngôn bất cẩn mà bị mất đi sự ưa thích.',
+                trans: 'Nghị sĩ đó do những phát ngôn bất cẩn mà đã bị mất đi sự yêu mến.'
+            },
+            {
+                q: 'わたしたちのチームがとうとう優勝した。感激の ( )、涙が出た。',
+                options: ['せいで', 'おかげで', 'あまり'],
+                answer: 2,
+                grammar: 'N の + あまり',
+                meaning: 'Vì quá xúc động nên nước mắt rơi.',
+                trans: 'Đội của chúng tôi cuối cùng đã vô địch. Vì quá xúc động nên nước mắt tôi đã rơi.'
+            },
+            {
+                q: '工事中 ( )、この道は通行止めです。',
+                options: ['なものだから', 'のあまり', 'につき'],
+                answer: 2,
+                grammar: 'N + につき',
+                meaning: 'Vì đang thi công nên tuyến đường này cấm lưu thông (thông báo công cộng).',
+                trans: 'Vì đang trong quá trình thi công nên tuyến đường này cấm lưu thông.'
+            }
+        ];
+
+        let current = 0, score = 0, canClick = true;
+
+        function init() {
+            const item = quizData[current];
+            document.getElementById('q-count').innerText = `Câu ${current + 1} / ${quizData.length}`;
+            document.getElementById('score-count').innerText = `Điểm: ${score}`;
+            document.getElementById('q-type').innerText = `Câu ${current + 1}: Chọn đáp án đúng`;
+            document.getElementById('question-content').innerText = item.q;
+            document.getElementById('feedback').style.display = 'none';
+            canClick = true;
+
+            const btns = document.querySelectorAll('.opt-btn');
+            btns.forEach((btn, i) => {
+                btn.innerText = item.options[i];
+                btn.className = 'opt-btn';
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            if(!canClick) return; 
+            canClick = false;
+
+            const item = quizData[current];
+            const btns = document.querySelectorAll('.opt-btn');
+            const statusEl = document.getElementById('result-status');
+
+            if(selectedIndex === item.answer) {
+                btns[selectedIndex].classList.add('correct'); 
+                score += 10;
+                statusEl.innerHTML = `<span style="color: #4caf50;">✓ 正解 (Chính xác!)</span>`;
+            } else {
+                btns[selectedIndex].classList.add('wrong');
+                btns[item.answer].classList.add('correct');
+                statusEl.innerHTML = `<span style="color: #ef5350;">✕ ざんねん (Đáp án đúng là: ${item.options[item.answer]})</span>`;
+            }
+
+            document.getElementById('ex-grammar').innerText = item.grammar;
+            document.getElementById('ex-meaning').innerText = item.meaning;
+            document.getElementById('ex-trans').innerText = item.trans;
+
+            document.getElementById('feedback').style.display = 'block';
+        }
+
+        function nextQuestion() {
+            current = (current + 1) % quizData.length;
+            init();
+        }
+
+        init();
+    </script>
+</body>
+</html>
